@@ -7,14 +7,52 @@ from telethon import TelegramClient as AsyncTelegramClient
 
 app = Flask(__name__)
 
-session_data = os.getenv("SESSION")
-if session_data:
-    with open("session.session", "wb") as f:
-        f.write(base64.b64decode(session_data))
+# Reconstruct session from parts or single env var
+def setup_session():
+    # Try single SESSION env var first (backward compatibility)
+    session_data = os.getenv("SESSION")
+    if session_data:
+        try:
+            with open("session.session", "wb") as f:
+                f.write(base64.b64decode(session_data))
+            print("✅ Session restored from single SESSION env var")
+            return True
+        except Exception as e:
+            print(f"❌ Failed to restore from SESSION env var: {e}")
+    
+    # Try multi-part reconstruction (using SESSION_PART_X format)
+    parts = []
+    i = 1
+    while True:
+        part = os.getenv(f"SESSION_PART_{i}")
+        if not part:
+            break
+        parts.append(part)
+        i += 1
+    
+    if parts:
+        try:
+            full_session = "".join(parts)
+            with open("session.session", "wb") as f:
+                f.write(base64.b64decode(full_session))
+            print(f"✅ Session reconstructed from {len(parts)} parts")
+            return True
+        except Exception as e:
+            print(f"❌ Failed to reconstruct from parts: {e}")
+    
+    # Check if session file already exists
+    if os.path.exists("session.session"):
+        print("✅ Using existing session.session file")
+        return True
+    
+    print("❌ No session data found - authentication required")
+    return False
+
+# Setup session on startup
+setup_session()
 
 API_ID = int(os.getenv("API_ID"))
 API_HASH = os.getenv("API_HASH")
-
 
 async def download_file(chat, message_id):
     try:
