@@ -54,9 +54,9 @@ setup_session()
 API_ID = int(os.getenv("API_ID"))
 API_HASH = os.getenv("API_HASH")
 
-async def download_file(chat, message_id, session_name="session"):
+async def download_file(chat, message_id):
     try:
-        async with AsyncTelegramClient(session_name, API_ID, API_HASH) as client:
+        async with AsyncTelegramClient("session", API_ID, API_HASH) as client:
             msg = await client.get_messages(chat, ids=message_id)
 
             if msg is None:
@@ -70,18 +70,16 @@ async def download_file(chat, message_id, session_name="session"):
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
-async def get_last_messages(chat, session_name="session"):
+async def get_last_messages(chat):
     try:
-        async with AsyncTelegramClient(session_name, API_ID, API_HASH) as client:
+        async with AsyncTelegramClient("session", API_ID, API_HASH) as client:
             messages = await client.get_messages(chat, limit=3)
             result = []
             for msg in messages:
                 result.append({
                     "id": msg.id,
                     "text": msg.text,
-                    "has_media": bool(msg.media),
-                    "sender_id": msg.sender_id,  # Add sender info for debugging
-                    "date": msg.date.isoformat() if msg.date else None
+                    "has_media": bool(msg.media)
                 })
             return {"status": "ok", "messages": result}
     except Exception as e:
@@ -96,31 +94,22 @@ def download():
     data = request.json
     chat = data.get("chat")
     message_id = data.get("message_id")
-    user_id = data.get("user_id")  # Optional user identifier
-    
-    # Determine session name based on user_id
-    session_name = f"session_{user_id}" if user_id else "session"
     
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-    result = loop.run_until_complete(download_file(chat, message_id, session_name))
+    result = loop.run_until_complete(download_file(chat, message_id))
     
     return jsonify(result)
 
 @app.route('/last_messages', methods=['GET'])
 def last_messages():
     chat = request.args.get("chat")
-    user_id = request.args.get("user_id")  # Optional user identifier
-    
     if not chat:
         return jsonify({"status": "error", "message": "Parameter 'chat' is required"}), 400
 
-    # Determine session name based on user_id
-    session_name = f"session_{user_id}" if user_id else "session"
-    
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-    result = loop.run_until_complete(get_last_messages(chat, session_name))
+    result = loop.run_until_complete(get_last_messages(chat))
     
     return jsonify(result)
 
