@@ -70,30 +70,19 @@ async def download_file(chat, message_id, session_name="session"):
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
-async def get_last_messages(chat, session_name="session", sender_id=None):
+async def get_last_messages(chat, session_name="session"):
     try:
         async with AsyncTelegramClient(session_name, API_ID, API_HASH) as client:
-            # Get more messages to filter by sender
-            messages = await client.get_messages(chat, limit=20)
+            messages = await client.get_messages(chat, limit=3)
             result = []
-            
             for msg in messages:
-                # If sender_id is specified, only include messages from that sender
-                if sender_id is not None and msg.sender_id != sender_id:
-                    continue
-                    
                 result.append({
                     "id": msg.id,
                     "text": msg.text,
                     "has_media": bool(msg.media),
-                    "sender_id": msg.sender_id,
+                    "sender_id": msg.sender_id,  # Add sender info for debugging
                     "date": msg.date.isoformat() if msg.date else None
                 })
-                
-                # Limit to 3 messages after filtering
-                if len(result) >= 3:
-                    break
-                    
             return {"status": "ok", "messages": result}
     except Exception as e:
         return {"status": "error", "message": str(e)}
@@ -122,7 +111,6 @@ def download():
 def last_messages():
     chat = request.args.get("chat")
     user_id = request.args.get("user_id")  # Optional user identifier
-    sender_id = request.args.get("sender_id")  # Optional sender filter
     
     if not chat:
         return jsonify({"status": "error", "message": "Parameter 'chat' is required"}), 400
@@ -130,17 +118,9 @@ def last_messages():
     # Determine session name based on user_id
     session_name = f"session_{user_id}" if user_id else "session"
     
-    # Convert sender_id to int if provided
-    sender_id_int = None
-    if sender_id:
-        try:
-            sender_id_int = int(sender_id)
-        except ValueError:
-            return jsonify({"status": "error", "message": "sender_id must be a valid integer"}), 400
-    
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-    result = loop.run_until_complete(get_last_messages(chat, session_name, sender_id_int))
+    result = loop.run_until_complete(get_last_messages(chat, session_name))
     
     return jsonify(result)
 
