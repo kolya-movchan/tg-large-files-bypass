@@ -26,7 +26,7 @@ def setup_session():
     parts = []
     i = 1
     while True:
-        part = os.getenv(f"SESSION_PART_{i}")
+        part = os.getenv(f"SESSION_PART_{i}_VI")
         if not part:
             break
         parts.append(part)
@@ -53,12 +53,12 @@ def setup_session():
 # Setup session on startup
 setup_session()
 
-API_ID = int(os.getenv("API_ID"))
-API_HASH = os.getenv("API_HASH")
+API_ID_VI = int(os.getenv("API_ID_VI"))
+API_HASH_VI = os.getenv("API_HASH_VI")
 
 async def download_file(chat, message_id):
     try:
-        async with AsyncTelegramClient("session", API_ID, API_HASH) as client:
+        async with AsyncTelegramClient("session", API_ID_VI, API_HASH_VI) as client:
             msg = await client.get_messages(chat, ids=message_id)
 
             if msg is None:
@@ -74,7 +74,7 @@ async def download_file(chat, message_id):
 
 async def get_last_messages(chat):
     try:
-        async with AsyncTelegramClient("session", API_ID, API_HASH) as client:
+        async with AsyncTelegramClient("session", API_ID_VI, API_HASH_VI) as client:
             messages = await client.get_messages(chat, limit=3)
             result = []
             for msg in messages:

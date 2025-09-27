@@ -49,13 +49,13 @@ else:
     session_name = "session"  # Assuming you already have session.session locally
 
 # Set your API credentials
-api_id = int(os.getenv("API_ID"))
-api_hash = os.getenv("API_HASH")
+API_ID_VI = int(os.getenv("API_ID_VI"))
+API_HASH_VI = os.getenv("API_HASH_VI")
 
 # Who you want to read messages from
 chat_username = "@video_auto_upload_vi_bot"  # Replace this with the bot's username
 
-with TelegramClient(session_name, api_id, api_hash) as client:
+with TelegramClient(session_name, API_ID_VI, API_HASH_VI) as client:
     messages = client.get_messages(chat_username, limit=10)
     for msg in messages:
         print(f"ID: {msg.id}")
