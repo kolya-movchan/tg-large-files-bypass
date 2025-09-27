@@ -6,7 +6,7 @@ def reconstruct_session():
     parts = []
     i = 1
     while True:
-        part = os.getenv(f"SESSION_PART_{i}")
+        part = os.getenv(f"SESSION_PART_{i}_VI")
         if not part:
             break
         parts.append(part)

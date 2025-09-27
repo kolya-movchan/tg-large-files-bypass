@@ -18,7 +18,7 @@ def split_session_for_railway():
     
     # Print environment variables to set in Railway
     for i, chunk in enumerate(chunks):
-        print(f"SESSION_PART_{i + 1}={chunk}")
+        print(f"SESSION_PART_{i + 1}_VI={chunk}")
         print()
     
     # Also create a script to reconstruct
@@ -31,7 +31,7 @@ def reconstruct_session():
     parts = []
     i = 1
     while True:
-        part = os.getenv(f"SESSION_PART_{i}")
+        part = os.getenv(f"SESSION_PART_{i}_VI")
         if not part:
             break
         parts.append(part)
