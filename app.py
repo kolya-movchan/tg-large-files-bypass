@@ -5,6 +5,8 @@ from flask import Flask, request, jsonify, send_from_directory
 from telethon.sync import TelegramClient
 from telethon import TelegramClient as AsyncTelegramClient
 
+# comment left
+
 app = Flask(__name__)
 
 # Reconstruct session from parts or single env var
