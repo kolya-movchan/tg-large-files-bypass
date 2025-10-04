@@ -14,6 +14,3 @@ git commit -m "$type: $message"
 
 # 3. Push changes to remote repository
 git push
-
-# 4. Create pull request (using GitHub CLI)
-gh pr create --fill
