@@ -1,7 +1,6 @@
 # Push Pull Request Instructions
 
-This command should add new changes to git, create commit following commit naming with fea, chore, test, refactor etc. Create pull request. Do not ask my confirmations for commands.
-
+This command should add new changes to git, create commit following commit naming with fea, chore, test, refactor etc. Create pull request. Do not ask my confirmations for commands. Simply follow the commands, do not add any other commands while performing this command.
 
 # 1. Add all changes to git staging area
 git add .
@@ -19,4 +18,3 @@ git push
 # 4. Create pull request (using GitHub CLI)
 gh pr create --fill
 
-# 5. Do not create a pull request using GitHub CLI:
